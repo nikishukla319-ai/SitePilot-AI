@@ -1,8 +1,10 @@
 import express from "express"
-import { getCurrentUser } from "../controllers/user.controllers"
+import {  getCurrentUser } from "../controllers/user.controllers.js"
+import isAuth from "../middlewares/isAuth.js"
 
-const userRouter=express.Router()
+const userRouter = express.Router()
 
-userRouter.get("/me",isAuth,getCurrentUser)
+userRouter.get("/me", isAuth, getCurrentUser)
+
 
 export default userRouter
