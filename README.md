@@ -2,36 +2,36 @@
 
 **Build, customize, and share websites using AI.**
 
-SitePilot AI is an AI-powered website builder that helps users turn their ideas into website code using natural-language prompts. Users can generate websites, refine them through AI-powered conversations, preview their work, and manage their projects through a dashboard.
+SitePilot AI is an AI-powered website builder that helps users turn their ideas into website code using natural-language prompts. Generate websites, refine them through AI-powered conversations, preview your work, and manage projects through a dashboard.
 
 ## ✨ Features
 
-- **AI Website Generation** — Generate website code from text prompts.
-- **AI-Powered Editing** — Improve generated websites using conversational instructions.
-- **Live Preview** — Preview website output in the browser.
-- **User Authentication** — Sign in using Google authentication.
-- **Dashboard** — Access and manage generated website projects.
-- **Credit-Based Usage** — Track AI generation credits.
-- **Pricing Plans** — View available plans.
-- **Payment Integration** — Stripe integration for billing.
-- **Responsive Interface** — A modern interface built with React and Tailwind CSS.
+- **AI Website Generation:** Generate website code from text prompts.
+- **AI-Powered Editing:** Improve generated websites using conversational instructions.
+- **Live Preview:** Preview generated websites in the browser.
+- **User Authentication:** Google sign-in using Firebase Authentication.
+- **Dashboard:** Access and manage generated website projects.
+- **Credit-Based Usage:** Track AI generation credits.
+- **Pricing Plans:** View available plans.
+- **Payment Integration:** Stripe billing integration.
+- **Responsive Interface:** Modern user interface built with React and Tailwind CSS.
 
 ## 🛠️ Tech Stack
 
-**Frontend**
+### Frontend
 - React
 - Vite
 - Tailwind CSS
 - Redux Toolkit
 - Axios
 
-**Backend**
+### Backend
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
 
-**AI & Integrations**
+### AI and Integrations
 - OpenRouter API
 - Firebase Authentication
 - Stripe
@@ -40,13 +40,13 @@ SitePilot AI is an AI-powered website builder that helps users turn their ideas 
 
 ```text
 SitePilot-AI/
-├── client/          # React frontend
+├── client/
 │   └── src/
 │       ├── components/
 │       ├── hooks/
 │       ├── pages/
 │       └── redux/
-├── server/          # Express backend
+├── server/
 │   ├── config/
 │   ├── controllers/
 │   ├── middlewares/
@@ -60,84 +60,88 @@ SitePilot-AI/
 
 ### Prerequisites
 
-- Node.js and npm
-- MongoDB connection
-- OpenRouter API key
-- Firebase project configured for Google authentication
-- Stripe credentials if using payment features
+Before running the project, make sure you have:
 
-### 1. Clone the repository
+- Node.js and npm installed
+- A MongoDB database connection
+- An OpenRouter API key
+- A Firebase project configured for Google authentication
+- Stripe credentials if using billing features
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/nikishukla319-ai/SitePilot-AI.git
 cd SitePilot-AI
 ```
 
-### 2. Install frontend dependencies
+### 2. Install Frontend Dependencies
 
 ```bash
 cd client
 npm install
 ```
 
-### 3. Configure frontend environment variables
+### 3. Configure Frontend Environment Variables
 
-Create a `.env` file inside `client/` and add the environment variable names required by your frontend Firebase configuration.
+Create a `.env` file inside the `client` directory.
 
-### 4. Install backend dependencies
+Add the Firebase configuration variables required by your frontend code. Use the exact variable names expected by your implementation.
 
-Open another terminal at the project root:
+### 4. Install Backend Dependencies
+
+From the project root, run:
 
 ```bash
 cd server
 npm install
 ```
 
-Create a `.env` file inside `server/` and configure the variables required by the backend, such as:
+Create a `.env` file inside the `server` directory and configure the required variables.
+
+Example:
 
 ```env
-PORT=8000
+PORT=5000
 MONGODB_URL=your_mongodb_connection_string
 OPENROUTER_API_KEY=your_openrouter_api_key
+JWT_SECRET=your_long_random_secret
+FRONTEND_URL=http://localhost:5173
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 ```
 
-Add any additional Firebase or Stripe variables required by your implementation. Use the exact variable names expected by your code.
+Use the actual frontend URL and the exact environment variable names required by your code. Configure Stripe variables if you use billing and webhook functionality.
 
-**Security:** Never commit `.env` files, API keys, database credentials, or Stripe secret keys to GitHub.
+### 5. Run the Application
 
-### 5. Run the application
-
-Start the backend using the script configured in `server/package.json`, for example:
+Start the backend using the development script defined in `server/package.json`. For example:
 
 ```bash
 npm run dev
 ```
 
-Start the frontend in a separate terminal:
+In a separate terminal, start the frontend:
 
 ```bash
 cd client
 npm run dev
 ```
 
-Open the local URL printed by Vite in your terminal.
+Open the local URL displayed by Vite in your terminal.
 
-## 🔐 Environment Variables
+## 🔐 Security
 
-The application may require configuration for:
-
-- MongoDB connection
-- OpenRouter API
-- Firebase authentication
-- Stripe billing and webhooks
-
-Set these variables locally. Do not publish their secret values.
+- Never commit `.env` files to GitHub.
+- Never expose API keys, database credentials, JWT secrets, or Stripe secret keys.
+- Keep private credentials in environment variables.
+- Use appropriate environment variables and configuration for production deployments.
 
 ## 🚧 Future Improvements
 
 - Add automated tests for core workflows.
 - Improve error handling and loading states.
-- Add more website templates and customization options.
+- Introduce additional website templates and customization options.
 - Improve deployment and website publishing workflows.
 - Strengthen API validation and security.
 
