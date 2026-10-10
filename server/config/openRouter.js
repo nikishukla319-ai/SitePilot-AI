@@ -16,13 +16,7 @@ const generateResponse = async (prompt) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            model: "deepseek/deepseek-chat",
-
-            models: [
-                "deepseek/deepseek-chat",
-                "google/gemini-2.5-flash",
-                "openai/gpt-5-mini"
-            ],
+            model: "cohere/north-mini-code:free",
 
             messages: [
                 {
@@ -43,7 +37,6 @@ const generateResponse = async (prompt) => {
 
     if (!res.ok) {
         const err = await res.text();
-
         let errorData = {};
 
         try {
@@ -68,7 +61,7 @@ const generateResponse = async (prompt) => {
 
         if (errorCode === 402) {
             const error = new Error(
-                "AI service credits are temporarily unavailable. Please try again later."
+                "AI service credits are unavailable. Please check the selected model and account limits."
             );
             error.statusCode = 503;
             throw error;
@@ -76,7 +69,7 @@ const generateResponse = async (prompt) => {
 
         if (res.status === 429) {
             const error = new Error(
-                "Too many requests right now. Please wait a moment and try again."
+                "Free model request limit reached. Please wait and try again."
             );
             error.statusCode = 429;
             throw error;
@@ -112,7 +105,7 @@ const generateResponse = async (prompt) => {
 
     if (choice.finish_reason === "length") {
         const error = new Error(
-            "AI response was cut off before completion. Please try a shorter website prompt."
+            "AI response was cut off. Please try a shorter website prompt."
         );
         error.statusCode = 502;
         error.code = "AI_RESPONSE_TRUNCATED";
