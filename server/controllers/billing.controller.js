@@ -32,7 +32,7 @@ export const billing = async (req, res) => {
                 credits: String(plan.credits),
                 plan: planType
             },
-            success_url: `${process.env.FRONTEND_URL}/`,
+            success_url: `${process.env.FRONTEND_URL}/pricing?payment=success&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/pricing`
         });
 
@@ -46,3 +46,71 @@ export const billing = async (req, res) => {
         });
     }
 };
+
+
+export const verifyCheckoutSession = async (req, res) => {
+    try {
+        const { sessionId } = req.body;
+        const userId = req.user._id.toString();
+
+        if (!sessionId) {
+            return res.status(400).json({ message: "Session ID required" });
+        }
+
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        if (session.metadata?.userId !== userId) {
+            return res.status(403).json({ message: "Session does not belong to this user" });
+        }
+
+        if (session.payment_status !== "paid") {
+            return res.status(400).json({ message: "Payment is not completed" });
+        }
+
+        const planType = session.metadata?.plan;
+        const plan = PLANS[planType];
+
+        if (!plan || plan.price <= 0) {
+            return res.status(400).json({ message: "Invalid plan" });
+        }
+
+        const User = (await import("../models/user.model.js")).default;
+
+        const updatedUser = await User.findOneAndUpdate(
+            {
+                _id: userId,
+                processedStripeSessions: { $ne: session.id }
+            },
+            {
+                $inc: { credits: plan.credits },
+                $set: { plan: planType },
+                $addToSet: { processedStripeSessions: session.id }
+            },
+            { new: true }
+        );
+
+        if (updatedUser) {
+            return res.json({
+                message: "Credits added successfully",
+                credits: updatedUser.credits,
+                plan: updatedUser.plan
+            });
+        }
+
+        const existingUser = await User.findById(userId);
+
+        if (existingUser?.processedStripeSessions?.includes(session.id)) {
+            return res.json({
+                message: "Payment already applied",
+                credits: existingUser.credits,
+                plan: existingUser.plan
+            });
+        }
+
+        return res.status(404).json({ message: "User not found" });
+    } catch (error) {
+        console.error("Checkout verification error:", error);
+        return res.status(500).json({ message: "Could not verify payment" });
+    }
+};
+

@@ -1,11 +1,12 @@
 
 import { ArrowLeft, Check, Coins } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from "motion/react";
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { serverUrl } from "../App";
+
 
 const plans = [
     {
@@ -52,6 +53,42 @@ const plans = [
         button: "Contact Sales",
     },
 ];
+
+useEffect(() => {
+    const verifyPayment = async () => {
+        const params = new URLSearchParams(window.location.search);
+        const payment = params.get("payment");
+        const sessionId = params.get("session_id");
+
+        if (payment !== "success" || !sessionId) return;
+
+        try {
+            const result = await axios.post(
+                `${serverUrl}/api/billing/verify-session`,
+                { sessionId },
+                { withCredentials: true }
+            );
+
+            alert(`Payment verified! Credits: ${result.data.credits}`);
+
+            window.history.replaceState({}, "", "/pricing");
+            navigate("/dashboard");
+        } catch (error) {
+            console.error(
+                "Payment verification failed:",
+                error.response?.data || error.message
+            );
+            alert(
+                error.response?.data?.message ||
+                "Payment verification failed. Please contact support before paying again."
+            );
+        }
+    };
+
+    verifyPayment();
+}, [navigate]);
+
+
 
 function Pricing() {
     const navigate = useNavigate();
