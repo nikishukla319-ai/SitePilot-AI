@@ -728,6 +728,76 @@ Use:
 \- Professional colors
 
 
+--------------------------------------------------
+PRODUCTION QUALITY AND FUNCTIONALITY VALIDATION
+--------------------------------------------------
+
+Before returning the final HTML, internally verify the
+following requirements:
+
+1. COMPLETE WEBSITE
+- Return a complete HTML document with html, head and body.
+- Include all CSS and JavaScript required for the website.
+- Never return partial HTML, unfinished sections or TODO comments.
+- Use a consistent design system across every section.
+- Use realistic, business-specific text and content.
+
+2. REAL INTERACTIONS
+- Every visible button must perform its intended action.
+- Every navigation link must lead to a valid section or destination.
+- Search must actually filter the displayed content.
+- Filters must update visible results.
+- Forms must validate required fields and show success or error feedback.
+- Mobile navigation must open and close correctly.
+- Do not create buttons that only display hover effects.
+
+3. ECOMMERCE FUNCTIONALITY
+When generating a store:
+- Render distinct products with relevant images and real-looking prices.
+- Each Add to Cart button must add its correct product.
+- Update the cart count immediately.
+- Support increasing and decreasing item quantities.
+- Support removing products.
+- Recalculate subtotal and total correctly.
+- Show a proper empty-cart state.
+- Keep cart state synchronized with the visible cart UI.
+- Persist the cart in localStorage when appropriate.
+- Validate checkout fields before showing an order confirmation.
+- Clearly label demo checkout as a demo.
+- Never claim that real payment or order processing occurred
+  without an actual backend integration.
+
+4. IMAGES AND CONTENT
+- Use relevant, valid HTTPS image URLs.
+- Use different images for different products and sections.
+- Add descriptive alt attributes.
+- Avoid repeated images, empty image sources and placeholder content.
+- Ensure text remains readable over images.
+- Provide a fallback if an image cannot load.
+
+5. DESIGN QUALITY
+- Build a premium, polished website suitable for a portfolio.
+- Use responsive desktop, tablet and mobile layouts.
+- Include appropriate Home, About, Features/Services and Contact sections.
+- Add additional sections only when relevant to the business.
+- Maintain consistent spacing, typography, colors and button styles.
+- Avoid generic layouts unrelated to the user's business.
+
+6. FINAL SELF-CHECK
+Before returning the response, verify that:
+- All required HTML sections are present.
+- All important buttons have working event handlers.
+- All requested functionality has actual JavaScript logic.
+- Cart calculations and quantity changes are correct when applicable.
+- Navigation links point to existing sections.
+- Forms validate user input.
+- There are no obvious JavaScript syntax errors.
+- The result is a complete HTML document.
+
+Fix any issues you identify before returning the final output.
+Do not describe the self-check in the response.
+Return only the required valid JSON object.
+
 
 \--------------------------------------------------
 
@@ -884,19 +954,42 @@ const finalPrompt = masterPrompt.replace(
 
 
 
-    if (!parsed || !parsed.code) {
+    if (
+  !parsed ||
+  typeof parsed.code !== "string" ||
+  !parsed.code.trim()
+) {
+  console.log("AI RETURNED INVALID RESPONSE");
 
-      console.log("AI RETURNED INVALID RESPONSE");
+  return res.status(400).json({
+    message: "AI returned an invalid response. Please try again."
+  });
+}
 
+const generatedHtml = parsed.code.trim();
 
+const requiredHtmlTags = [
+  /<html\b/i,
+  /<\/html\s*>/i,
+  /<head\b/i,
+  /<\/head\s*>/i,
+  /<body\b/i,
+  /<\/body\s*>/i
+];
 
-      return res.status(400).json({
+const isCompleteHtml = requiredHtmlTags.every((tag) =>
+  tag.test(generatedHtml)
+);
 
-        message: "ai returned invalid response"
+if (!isCompleteHtml) {
+  console.log("AI RETURNED INCOMPLETE HTML");
 
-      });
+  return res.status(400).json({
+    message: "AI generated incomplete HTML. Please try again."
+  });
+}
 
-    }
+parsed.code = generatedHtml;
 
 
 
@@ -1213,21 +1306,42 @@ RETURN RAW JSON ONLY:
 
 
 
-    if (!parsed || !parsed.code) {
+    if (
+  !parsed ||
+  typeof parsed.code !== "string" ||
+  !parsed.code.trim()
+) {
+  console.log("AI RETURNED INVALID RESPONSE");
 
-      console.log("AI RETURNED INVALID RESPONSE");
+  return res.status(400).json({
+    message: "AI returned an invalid response. Please try again."
+  });
+}
 
+const updatedHtml = parsed.code.trim();
 
+const requiredHtmlTags = [
+  /<html\b/i,
+  /<\/html\s*>/i,
+  /<head\b/i,
+  /<\/head\s*>/i,
+  /<body\b/i,
+  /<\/body\s*>/i
+];
 
-      return res.status(400).json({
+const isCompleteHtml = requiredHtmlTags.every((tag) =>
+  tag.test(updatedHtml)
+);
 
-        message: "ai returned invalid response"
+if (!isCompleteHtml) {
+  console.log("AI RETURNED INCOMPLETE UPDATED HTML");
 
-      });
+  return res.status(400).json({
+    message: "AI generated incomplete HTML. Please try again."
+  });
+}
 
-    }
-
-
+parsed.code = updatedHtml;
 
     website.conversation.push(
 
