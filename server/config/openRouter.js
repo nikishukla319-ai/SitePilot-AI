@@ -19,10 +19,8 @@ const generateResponse = async (prompt) => {
             model: "cohere/north-mini-code:free",
 
 reasoning: {
-    effort: "low",
-    max_tokens: 1500
+    effort: "low"
 },
-
 messages: [
                 {
                     role: "system",
