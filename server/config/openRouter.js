@@ -1,3 +1,4 @@
+
 const openRouterUrl = "https://openrouter.ai/api/v1/chat/completions";
 
 const generateResponse = async (prompt) => {
@@ -16,23 +17,18 @@ const generateResponse = async (prompt) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            model: "cohere/north-mini-code:free",
-
-reasoning: {
-    effort: "minimal"
-},
-messages: [
+            model: "deepseek/deepseek-chat",
+            messages: [
                 {
                     role: "system",
                     content:
-                        "Return only one valid raw JSON object. Do not use Markdown or code fences. The JSON must contain the required fields and complete HTML."
+                        "Return only one valid raw JSON object. Do not use Markdown or code fences. The JSON must contain the required fields and complete HTML. Keep the website implementation concise, complete, and responsive."
                 },
                 {
                     role: "user",
                     content: prompt
                 }
             ],
-
             max_tokens: 12000,
             temperature: 0.2
         }),
@@ -72,7 +68,7 @@ messages: [
 
         if (res.status === 429) {
             const error = new Error(
-                "Free model request limit reached. Please wait and try again."
+                "AI request limit reached. Please wait and try again."
             );
             error.statusCode = 429;
             throw error;
@@ -90,6 +86,10 @@ messages: [
     const data = await res.json();
     const choice = data?.choices?.[0];
 
+    console.log("AI model:", data?.model);
+    console.log("AI finish reason:", choice?.finish_reason);
+    console.log("AI response length:", choice?.message?.content?.length ?? 0);
+
     if (!choice?.message?.content) {
         console.error(
             "OpenRouter returned no content:",
@@ -102,9 +102,6 @@ messages: [
         error.statusCode = 502;
         throw error;
     }
-
-    console.log("AI finish reason:", choice.finish_reason);
-    console.log("AI response length:", choice.message.content.length);
 
     if (choice.finish_reason === "length") {
         const error = new Error(
