@@ -17,7 +17,7 @@ const generateResponse = async (prompt) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            model: "deepseek/deepseek-chat",
+            model: "deepseek/deepseek-v4-flash:free",
             messages: [
                 {
                     role: "system",
