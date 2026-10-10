@@ -18,7 +18,12 @@ const generateResponse = async (prompt) => {
         body: JSON.stringify({
             model: "cohere/north-mini-code:free",
 
-            messages: [
+reasoning: {
+    effort: "low",
+    max_tokens: 1500
+},
+
+messages: [
                 {
                     role: "system",
                     content:
