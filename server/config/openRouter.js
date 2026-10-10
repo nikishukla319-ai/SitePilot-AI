@@ -19,7 +19,7 @@ const generateResponse = async (prompt) => {
             model: "cohere/north-mini-code:free",
 
 reasoning: {
-    effort: "low"
+    effort: "minimal"
 },
 messages: [
                 {
