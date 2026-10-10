@@ -88,7 +88,7 @@ function Pricing() {
                         : `Payment verified! Current credits: ${result.data.credits}`
                 );
 
-                navigate('/dashboard');
+                window.location.href = '/dashboard';
             } catch (error) {
                 if (cancelled) return;
 
