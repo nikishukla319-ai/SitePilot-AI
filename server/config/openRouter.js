@@ -33,7 +33,7 @@ messages: [
                 }
             ],
 
-            max_tokens: 8000,
+            max_tokens: 12000,
             temperature: 0.2
         }),
     });
