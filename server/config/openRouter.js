@@ -32,9 +32,54 @@ const generateResponse = async (prompt) => {
     })
 
     if (!res.ok) {
-        const err = await res.text()
-        throw new Error("openRouter err " + err)
+    const err = await res.text();
+
+    let errorData = {};
+
+    try {
+        errorData = JSON.parse(err);
+    } catch {
+        errorData = {};
     }
+
+    const errorCode = errorData?.error?.code;
+    const errorMessage = errorData?.error?.message || "";
+
+    if (
+        errorCode === 402 &&
+        errorMessage.includes("in_flight_budget_exhausted")
+    ) {
+        const error = new Error(
+            "AI is busy right now. Please wait 2 minutes and try again."
+        );
+        error.statusCode = 429;
+        throw error;
+    }
+
+    if (errorCode === 402) {
+        const error = new Error(
+            "AI service credits are temporarily unavailable. Please try again later."
+        );
+        error.statusCode = 503;
+        throw error;
+    }
+
+    if (res.status === 429) {
+        const error = new Error(
+            "Too many requests right now. Please wait a moment and try again."
+        );
+        error.statusCode = 429;
+        throw error;
+    }
+
+    console.error("OpenRouter error:", err);
+
+    const error = new Error(
+        "Website generation is temporarily unavailable. Please try again later."
+    );
+    error.statusCode = 503;
+    throw error;
+}
 
     const data = await res.json()
 

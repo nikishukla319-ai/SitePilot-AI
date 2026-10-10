@@ -5,6 +5,7 @@ import Website from "../models/website.model.js";
 import extractJson from "../utils/extractJson.js";
 
 import User from "../models/user.model.js";
+import { enhancePrompt } from "../utils/enhancePrompt.js";
 
 
 
@@ -130,11 +131,38 @@ For calculator websites:
 
 GLOBAL QUALITY BAR
 
+WEBSITE TYPE DETECTION AND CONTENT RULES:
+
+- First identify the website type from the user's original request.
+- Never generate a generic business landing page when the user requests an online shopping or e-commerce website.
+- For shopping websites, create at least 4 realistic product cards with product images, names, prices, and Add to Cart buttons.
+- Use valid HTTPS image URLs relevant to the products. Do not omit product images.
+- Add a working shopping cart with a visible item count and total price.
+- Add functional product buttons using JavaScript click event handlers.
+- For other website types, generate content and functionality appropriate to the requested purpose.
+- Always include working Home, About, Services or Features, and Contact navigation.
+- Every navigation link must point to an existing section.
+- On mobile, provide a working hamburger menu instead of hiding navigation completely.
+- Before returning the HTML, verify that all required sections, image elements, buttons, and JavaScript handlers exist.
+- Do not substitute a requested functional website with a generic landing page.
+
 \--------------------------------------------------
 
 
 
 \- Modern premium UI
+  
+- Use relevant, high-quality images that match the user's website topic.
+- Use real, valid HTTPS image URLs from reliable image sources such as images.unsplash.com.
+- Include actual image URLs in HTML img src attributes; do not use empty src, placeholders, or broken links.
+- Add a visually appealing hero image or image composition wherever appropriate.
+- Use relevant images for product cards, services, portfolios, and other visual sections when suitable.
+- Set object-fit: cover and appropriate image dimensions to maintain a polished layout.
+- Add meaningful alt text to every image.
+- Use CSS background images only when they improve the design.
+- If a remote image fails to load, provide a visually appealing CSS fallback.
+- Do not generate a text-only website when images are appropriate for the requested website.
+
 
 \- Professional typography
 
@@ -483,6 +511,13 @@ FUNCTIONAL REQUIREMENTS
 \- Smooth section/page transitions
 
 \- User-requested functionality must actually work
+- Every visible button must have a working JavaScript click handler that performs its intended action; hover effects alone are not functionality.
+- For e-commerce websites, every Add to Cart button must add the correct product to a JavaScript cart array, update the cart count immediately, and update the cart total when prices are available.
+- Display a visible cart count in the header and provide a working way to view cart items.
+- Prevent buttons such as Explore, Learn More, and View Details from incorrectly triggering Add to Cart.
+- Connect every navigation link to an existing section or implement its intended navigation behavior.
+- Before returning the HTML, verify that every button's JavaScript handler references existing HTML elements and that all required elements are present.
+- Do not claim a feature works unless its JavaScript behavior is implemented.
 
 \- All JavaScript must be included inside the HTML document
 
@@ -794,7 +829,12 @@ export const generateWebsite = async (req, res) => {
 
 
 
-    const finalPrompt = masterPrompt.replace("{USER_PROMPT}", prompt);
+    const enhancedPrompt = await enhancePrompt(prompt);
+
+const finalPrompt = masterPrompt.replace(
+  "{USER_PROMPT}",
+  enhancedPrompt
+);
 
 
 
@@ -1260,32 +1300,26 @@ RETURN RAW JSON ONLY:
 
 
 export const getAll = async (req, res) => {
-
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        message: "User not authenticated. Please login again."
+      });
+    }
 
     const websites = await Website.find({
-
       user: req.user._id
-
     });
-
-
 
     return res.status(200).json(websites);
-
-
-
   } catch (error) {
+    console.error("GET ALL WEBSITES ERROR:", error);
 
     return res.status(500).json({
-
-      message: `get all websites error ${error}`
-
+      message: `get all websites error: ${error.message}`
     });
-
   }
-
-}
+};
 
 export const deploy=async (req,res)=>{
   try{
